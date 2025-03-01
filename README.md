@@ -6,7 +6,9 @@ A browser-based application that performs real-time fact checking on spoken cont
 
 Real-time Fact Checker is a standalone HTML/JS application that lets you analyze statements from videos or webcam streams in real-time. It transcribes speech using the Web Speech API and checks factual accuracy using AI language models like OpenAI's GPT, Anthropic's Claude, xAI's Grok, or local Ollama models.
 
-![Screenshot of Real-time Fact Checker](screenshot.jpg)
+[Live Demo](https://steveseguin.github.io/live-fact-checker/)
+
+![image](https://github.com/user-attachments/assets/da39a37e-8b88-4f81-9f60-a69e03e26045)
 
 ## Features
 
