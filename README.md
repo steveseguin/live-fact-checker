@@ -66,7 +66,7 @@ For privacy or offline usage, you can use Ollama with locally-running models:
 
 ## Privacy & Data
 
-- All processing happens in your browser
+- All processing happens in your browser, except for any text-data sent to remote AI services for processing
 - Your API key is stored only in your browser's local storage
 - Video and audio are not uploaded anywhere (only transcribed text is sent to AI APIs)
 - Fact check results are stored in your browser's local storage only
