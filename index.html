@@ -380,7 +380,7 @@
             try {
                 const apiKey = apiKeyInput.value;
                 const apiEndpoint = apiEndpointInput.value;
-                if (!apiKey) {
+                if (!apiKey && apiProviderSelect.value !== 'ollama') {
                     throw new Error("API key is required");
                 }
                 const result = await factCheck(statement, apiKey, apiEndpoint);
@@ -413,9 +413,11 @@
             const systemMessage = 'You are a fact-checking assistant. Your role is to determine if statements are true or false and provide brief explanations.';
             let requestBody;
             let headers = {
-                'Content-Type': 'application/json',
-                'Authorization': `Bearer ${apiKey}`
+                'Content-Type': 'application/json'
             };
+            if (apiKey) {
+                headers.Authorization = `Bearer ${apiKey}`;
+            }
             switch(provider) {
                 case 'xai':
                     requestBody = {
@@ -769,12 +771,13 @@
             const savedProvider = localStorage.getItem('factCheckerApiProvider');
             
             if (savedApiKey) apiKeyInput.value = savedApiKey;
-            if (savedEndpoint) apiEndpointInput.value = savedEndpoint;
-            if (savedModel) apiModelInput.value = savedModel;
             if (savedProvider) {
                 apiProviderSelect.value = savedProvider;
                 updateProviderDefaults();
             }
+            // Apply saved overrides after the selected provider's defaults.
+            if (savedEndpoint) apiEndpointInput.value = savedEndpoint;
+            if (savedModel) apiModelInput.value = savedModel;
         }
         
         // Call loadSavedSettings() when the page loads
@@ -791,3 +794,4 @@
     </script>
 </body>
 </html>
+
