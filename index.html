@@ -245,6 +245,8 @@
 
         let isRecording = false;
         let mediaStream = null;
+        let currentVideoURL = null;
+        let mediaRequestId = 0;
         let speechRecognition = null;
         let currentMediaType = null;
         let notes = [];
@@ -617,25 +619,47 @@
             });
             localStorage.setItem('factCheckerNotes', JSON.stringify(notes));
         }
+        function releaseMediaSource() {
+            videoElement.srcObject = null;
+            if (mediaStream) {
+                mediaStream.getTracks().forEach(track => track.stop());
+                mediaStream = null;
+            }
+            if (currentVideoURL) {
+                videoElement.removeAttribute('src');
+                URL.revokeObjectURL(currentVideoURL);
+                currentVideoURL = null;
+            }
+        }
         function setupVideoFile(file) {
             const videoURL = URL.createObjectURL(file);
+            mediaRequestId += 1;
+            releaseMediaSource();
+            currentVideoURL = videoURL;
             videoElement.src = videoURL;
             currentMediaType = 'video';
             startBtn.disabled = false;
             statusMessage.textContent = 'Video loaded. Ready to start fact checking.';
         }
         async function setupWebcam() {
+            const requestId = ++mediaRequestId;
             try {
                 const stream = await navigator.mediaDevices.getUserMedia({
                     video: true,
                     audio: true
                 });
+                if (requestId !== mediaRequestId) {
+                    stream.getTracks().forEach(track => track.stop());
+                    return;
+                }
+                releaseMediaSource();
                 videoElement.srcObject = stream;
                 mediaStream = stream;
                 currentMediaType = 'webcam';
                 startBtn.disabled = false;
                 statusMessage.textContent = 'Webcam active. Ready to start fact checking.';
             } catch (error) {
+                if (requestId !== mediaRequestId) return;
                 statusMessage.textContent = `Error accessing webcam: ${error.message}`;
             }
         }
@@ -781,9 +805,8 @@
         loadSavedSettings();
 
         window.addEventListener('beforeunload', () => {
-            if (mediaStream) {
-                mediaStream.getTracks().forEach(track => track.stop());
-            }
+            mediaRequestId += 1;
+            releaseMediaSource();
             if (speechRecognition) {
                 speechRecognition.stop();
             }
