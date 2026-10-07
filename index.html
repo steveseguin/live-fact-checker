@@ -502,6 +502,15 @@
                 throw error;
             }
         }
+        function escapeHTML(text) {
+            return String(text).replace(/[&<>"']/g, character => ({
+                '&': '&amp;',
+                '<': '&lt;',
+                '>': '&gt;',
+                '"': '&quot;',
+                "'": '&#39;'
+            })[character]);
+        }
         function displayFactCheckResult(statement, result) {
             let resultClass = 'false';
             let resultStatus = 'FALSE';
@@ -543,8 +552,8 @@
             factCheckResult.innerHTML = `
                 <div class="note-item ${resultClass}">
                     <strong>${resultStatus}</strong>
-                    <p><em>"${statement}"</em></p>
-                    <p>${resultText}</p>
+                    <p><em>"${escapeHTML(statement)}"</em></p>
+                    <p>${escapeHTML(resultText)}</p>
                     <div class="confidence-meter">
                         <div class="confidence-level" style="width: ${confidenceLevel}%; background-color: ${confidenceColor};"></div>
                     </div>
@@ -593,8 +602,8 @@
                 }
                 noteElement.innerHTML = `
                     <strong>${statusText} - ${note.timestamp}</strong>
-                    <p><em>"${note.statement}"</em></p>
-                    <p>${note.result}</p>
+                    <p><em>"${escapeHTML(note.statement)}"</em></p>
+                    <p>${escapeHTML(note.result)}</p>
                 `;
                 if (note.confidenceLevel) {
                     let confidenceColor;
